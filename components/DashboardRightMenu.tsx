@@ -1,7 +1,7 @@
 "use client";
 // next
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // types
 import { SearchJob } from "@/types/types";
@@ -18,6 +18,7 @@ export default function DashboardRightMenu() {
   const searchJobs = useAppSelector(selectSearchJobs);
   const dispatch = useAppDispatch();
   const { token, user } = useAppSelector((state) => state.auth);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     dispatch(getMe({ token } as { token: string }));
@@ -25,6 +26,14 @@ export default function DashboardRightMenu() {
 
   const handleDeleteSearchJob = (id: number) => {
     dispatch(deleteSearchJob(id));
+  };
+
+  const handleCopyReferralCode = () => {
+    if (user?.referralCode) {
+      navigator.clipboard.writeText(user.referralCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
@@ -122,12 +131,22 @@ export default function DashboardRightMenu() {
           Help your friends
         </h1>
         <p className="text-[16px] leading-[27px]">
-          Found a house? Give free mont hs to your friends.
+          Found a house? Give free months to your friends.
         </p>
         <div className="flex items-center gap-2">
-          <span>{user?.referralCode}</span>
-          <button className="font-bold text-lg text-main xl:hover:underline">
-            Copy
+          <span className="bg-gray-100 py-1 px-2 rounded">
+            {user?.referralCode}
+          </span>
+          <button
+            onClick={handleCopyReferralCode}
+            className="relative font-bold text-lg text-main xl:hover:underline"
+          >
+            {copied ? "Copied!" : "Copy"}
+            {copied && (
+              <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded">
+                Copied!
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -220,7 +239,7 @@ export default function DashboardRightMenu() {
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
-                d="M8.50001 0.5C7.1446 0.500115 5.80887 0.824364 4.60427 1.44569C3.39966 2.06702 2.3611 2.96742 1.57525 4.07175C0.789389 5.17609 0.279019 6.45235 0.0867177 7.79404C-0.105584 9.13574 0.0257587 10.504 0.469788 11.7846C0.913817 13.0652 1.65766 14.2211 2.63925 15.1557C3.62084 16.0904 4.81171 16.7768 6.11252 17.1576C7.41333 17.5384 8.78635 17.6026 10.117 17.3449C11.4477 17.0872 12.6975 16.515 13.762 15.676L17.414 19.328C17.6026 19.5102 17.8552 19.611 18.1174 19.6087C18.3796 19.6064 18.6304 19.5012 18.8158 19.3158C19.0012 19.1304 19.1064 18.8796 19.1087 18.6174C19.111 18.3552 19.0102 18.1026 18.828 17.914L15.176 14.262C16.164 13.0086 16.7792 11.5024 16.9511 9.91573C17.123 8.32905 16.8448 6.72602 16.1482 5.29009C15.4517 3.85417 14.3649 2.64336 13.0123 1.79623C11.6597 0.949106 10.096 0.499893 8.50001 0.5ZM2.00001 9C2.00001 7.27609 2.68483 5.62279 3.90382 4.40381C5.1228 3.18482 6.7761 2.5 8.50001 2.5C10.2239 2.5 11.8772 3.18482 13.0962 4.40381C14.3152 5.62279 15 7.27609 15 9C15 10.7239 14.3152 12.3772 13.0962 13.5962C11.8772 14.8152 10.2239 15.5 8.50001 15.5C6.7761 15.5 5.1228 14.8152 3.90382 13.5962C2.68483 12.3772 2.00001 10.7239 2.00001 9Z"
+                d="M8.50001 0.5C7.1446 0.500115 5.80887 0.824364 4.60427 1.44569C3.39966 2.06702 2.3611 2.96742 1.57525 4.07175C0.789389 5.17609 0.279019 6.45235 0.0867177 7.79404C-0.105584 9.13574 0.0257587 10.504 0.469788 11.7846C0.913817 13.0652 1.65766 14.2211 2.63925 15.1557C3.62084 16.0904 4.81171 16.7768 6.11252 17.1576C7.41333 17.5384 8.78635 17.6026 10.117 17.3449C11.4477 17.0872 12.6975 17.515 13.762 15.676L17.414 19.328C17.6026 19.5102 17.8552 19.611 18.1174 19.6087C18.3796 19.6064 18.6304 19.5012 18.8158 19.3158C19.0012 19.1304 19.1064 18.8796 19.1087 18.6174C19.111 18.3552 19.0102 18.1026 18.828 17.914L15.176 14.262C16.164 13.0086 16.7792 11.5024 16.9511 9.91573C17.123 8.32905 16.8448 6.72602 16.1482 5.29009C15.4517 3.85417 14.3649 2.64336 13.0123 1.79623C11.6597 0.949106 10.096 0.499893 8.50001 0.5ZM2.00001 9C2.00001 7.27609 2.68483 5.62279 3.90382 4.40381C5.1228 3.18482 6.7761 2.5 8.50001 2.5C10.2239 2.5 11.8772 3.18482 13.0962 4.40381C14.3152 5.62279 15 7.27609 15 9C15 10.7239 14.3152 12.3772 13.0962 13.5962C11.8772 14.8152 10.2239 15.5 8.50001 15.5C6.7761 15.5 5.1228 14.8152 3.90382 13.5962C2.68483 12.3772 2.00001 10.7239 2.00001 9Z"
                 fill="black"
               />
             </svg>
